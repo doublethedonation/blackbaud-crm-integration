@@ -1,6 +1,6 @@
 # Double the Donation / Blackbaud CRM Integration
 The purpose of this integration is to register Blackbaud CRM donations with 360MatchPro, the industry-leading matching gift automation platform. To set up the integration:
-- Create a Smart Query in BBCRM to identify the types of gifts you want to pass into 360MatchPro.
+- Create a [Smart Query in BBCRM](https://support.doublethedonation.com/support/doublethedonation/ShowHomePage.do?articlestatus=latest&rootcategoryId=164950000000068123&categoryId=164950000000069061#Solutions/dv/164950000073257001/en) to identify the types of gifts you want to pass into 360MatchPro.
 - Run doublethedonation.exe (bin/Release) as a daemon process using a task sheduler (e.g. [Windows Task Scheduler](https://docs.microsoft.com/en-us/windows/win32/taskschd/task-scheduler-start-page)). 
 
 ### Required and optional arguments for doublethedonation.exe
