@@ -7,7 +7,7 @@ The purpose of this integration is to register Blackbaud CRM donations with 360M
 | Argument | Details |
 | ------ | ------ |
 | \-\-connection="SQL Server DB Connection String"  | Required |
-|  \-\-privatekey=360matchpro_private_key | Required - [Learn more here](https://support.doublethedonation.com/portal/en/kb/articles/getting-started-understanding-api-keys) |
+|  \-\-privatekey=360_private_key | Required - [Learn more here](https://support.doublethedonation.com/portal/en/kb/articles/getting-started-understanding-api-keys) |
 |  \-\-batchsize=500 | Optional - By default, the daemon will fetch up to 500 records at a time. | 
 |  \-\-sql=custom_sql_string | Optional - By default, the daemon will use the BBCRM Smart Query with name '360MatchPro' to query new donation records.  The \-\-sql= parameter lets you pass custom SQL to the program if you prefer to not use a Smart Query.  In your customer query, make sure to order by DATECHANGED, and include "and DATECHANGED > @DATECHANGED" somewhere in your SQL WHERE statement.  However, we recommend Smart Queries since business analysts can fine tune queries without getting developers involved.| 
 
