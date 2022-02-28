@@ -12,7 +12,7 @@ The purpose of this integration is to register Blackbaud CRM donations with 360M
 |  \-\-sql=custom_sql_string | Optional - By default, the daemon will use the BBCRM Smart Query with name '360MatchPro' to query new donation records.  The \-\-sql= parameter lets you pass custom SQL to the program if you prefer to not use a Smart Query.  In your customer query, make sure to order by DATECHANGED, and include "and DATECHANGED > @DATECHANGED" somewhere in your SQL WHERE statement.  However, we recommend Smart Queries since business analysts can fine tune queries without getting developers involved.| 
 
 ### PowerShell example that connects to a database using windows authentication
- .\doublethedonation.exe --privatekey=360PRIVATEKEY --connection="data source=ServerName;Initial Catalog=DatabaseName;Integrated Security=True;" --batchsize=50
+ .\doublethedonation.exe --privatekey=360PRIVATEKEY --connection="data source=ServerName;Initial Catalog=DatabaseName;Integrated Security=True;" --batchsize=750
 
 ### How often should we run the program?
 We recommend running the program every 15 to 30 minutes.  For single, overnight runs, we recommend increasing the batch size (i.e. \-\-batchsize=N option) in order to capture all of your new donation records.
