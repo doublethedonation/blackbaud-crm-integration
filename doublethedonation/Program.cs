@@ -24,7 +24,7 @@ namespace doublethedonation
             string host = extractArg("host");
 
             if (args.Any(s => s.Trim().ToLower() == "--version")) {
-                Console.WriteLine("version 1.0.0");
+                Console.WriteLine("version 1.0.1");
                 return;                
             }
 

@@ -22,6 +22,7 @@ namespace doublethedonation
         private readonly string _dbConnection;
         private readonly string _privateKey;
         private readonly HttpClient _client = new HttpClient();
+        private string _dateChangedFieldName;
         private readonly HeartBeatPayload _heartbeat = new HeartBeatPayload();
 
         //dynamically map DTD Donation fist class fields to SQLDataReader fields
@@ -56,6 +57,22 @@ namespace doublethedonation
                 .Select(reader.GetName)
                 .ToList();
 
+            Console.WriteLine("Mapping DB fields: " + string.Join(",", dbFields));
+
+            //Get the exact DATECHANGED field name in the SqlDataReader since it is case sensitive and may have been aliased
+            if (dbFields.IndexOf("DATECHANGED") != -1) {
+                this._dateChangedFieldName = "DATECHANGED";
+            }
+            else {
+                this._dateChangedFieldName =    dbFields.FirstOrDefault(s => s.ToLower() == "datechanged")
+                                             ?? dbFields.FirstOrDefault(s => s.ToLower().Replace(" ", "") == "datechanged")
+                                             ?? dbFields.FirstOrDefault(s => s.ToLower().Replace("_", "") == "datechanged");
+            }
+
+            if (this._dateChangedFieldName == null) {
+                throw new Exception("Cannot find DATECHANGED field in the Smart Query. Available fields are: " + string.Join(",", dbFields));
+            }
+
             //prioritize first class fields over aliases
             foreach (var field in this._aliases) {
                 var firstClassField = field.Key;
@@ -89,7 +106,11 @@ namespace doublethedonation
 
             this._aliases
                 .Select(kv => kv.Key)
-                .Where(s => s != "donation_identifier" && s != "donation_amount" && s != "donation_datetime")
+                //Filter variables that deserve special treatment and optional first class fields
+                .Where(s =>    s != "donation_identifier"
+                            && s != "donation_amount" 
+                            && s != "donation_datetime"
+                            && this._mapping.ContainsKey(s))
                 .ToList()
                 .ForEach(s => donation.GetType().GetProperty(s).SetValue(donation, Convert.ToString(reader[this._mapping[s]]), null));
             ;
@@ -126,7 +147,7 @@ namespace doublethedonation
             var customFieldNames = Enumerable.Range(0, reader.FieldCount)
                                              .Select(reader.GetName)
                                              .Except(this._mapping.Values)
-                                             .Where(s => s != "DATECHANGED")
+                                             .Where(s => s != this._dateChangedFieldName)
                                              .ToList();
 
             foreach (string s in customFieldNames) {
@@ -161,8 +182,8 @@ namespace doublethedonation
             }
             return response;
         }
-
-        private bool IsDonationOudated(Donation donation) {
+        
+        private bool IsDonationOutdated(Donation donation) {
             return (donation.Date.HasValue && donation.Date.Value < DateTime.Now.AddMonths(-6));
         }
 
@@ -192,10 +213,11 @@ namespace doublethedonation
                 {
                     while (oReader.Read())
                     {
+                        this.MapFields(oReader);
                         try
                         {
                             Donation donation = this.ToDonation(oReader);
-                            if (this.IsDonationOudated(donation))
+                            if (this.IsDonationOutdated(donation))
                             {
                                 Console.WriteLine("Donation " + donation.donation_identifier + " is outdated (" + donation.donation_datetime + ")");
                             }
@@ -204,7 +226,7 @@ namespace doublethedonation
                                 await this.RegisterDonation(donation, dtdPublicKey);
                                 this._heartbeat.TotalRecordsProcessed++;
 
-                                var dateChanged = oReader["DATECHANGED"];
+                                var dateChanged = oReader[this._dateChangedFieldName];
                                 var dateType = dateChanged.GetType();
 
                                 if (dateType == typeof(DateTimeOffset))
@@ -225,7 +247,7 @@ namespace doublethedonation
                             }
                         }
                         catch (Exception e) {
-                            Console.WriteLine("Error registering donation: " + e.Message);
+                            Console.WriteLine("Error registering donation: " + e.ToString());
                         }
                     }
                 }
