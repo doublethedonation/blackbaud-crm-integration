@@ -18,5 +18,5 @@ The purpose of this integration is to register Blackbaud CRM donations with 360M
 We recommend running the program every 15 to 30 minutes.  For single, overnight runs, we recommend increasing the batch size (i.e. \-\-batchsize=N option) in order to capture all of your new donation records.
 
 ### Why do we provide this program for you to run on your system?
-Many Blackbaud CRM systems operate behind a firewall with no standard REST endpoints for third party connections. Also, this program takes full advantage of BBCRM Smart Queries, which are extremely flexible and easy to configure.
+Many Blackbaud CRM systems operate behind a firewall with no standard REST endpoints for third party connections.  This program pushes donations from your system to 360MatchPro via an http post.
 
